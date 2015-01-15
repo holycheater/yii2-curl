@@ -1,0 +1,13 @@
+{
+	"name": "alex-salt/yii2-curl",
+    "description" : "curl client for yii",
+    "homepage": "http://github.com/holycheater/yii-curl",
+    "license" : "MIT",
+    "require" : {
+        "yiisoft/yii2" : "*",
+        "php" : ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4" : { "curl\\" : "src/" }
+    }
+}
