@@ -39,10 +39,10 @@ class Response extends \yii\base\Object {
 		unset($lines[0]);
 		$result = [ ];
 		foreach ($lines as $line) {
-			if (empty($line) || strpos($line, 'HTTP/') === 0)
-				continue;
-			list($k, $v) = explode(": ", $line);
-			$result[$k] = $v;
+			if (strpos($line, ':')) {
+				list($k, $v) = explode(": ", $line);
+				$result[$k] = $v;
+			}
 		}
 		return $result;
 	}
