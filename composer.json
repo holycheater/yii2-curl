@@ -1,7 +1,7 @@
 {
 	"name": "alex-salt/yii2-curl",
-    "description" : "curl client for yii",
-    "homepage": "http://github.com/holycheater/yii-curl",
+    "description" : "curl client for yii2",
+    "homepage": "http://github.com/holycheater/yii2-curl",
     "license" : "MIT",
     "require" : {
         "yiisoft/yii2" : "*",
