@@ -102,10 +102,10 @@ class Request {
 	/**
 	 * send POST query
 	 */
-	public function post($data) {
+	public function post($data, $repeat = 0) {
 		$this->requestType = 'POST';
 		$this->data = $data;
-		return $this->exec();
+		return $this->exec($repeat);
 	}
 
 	/**
