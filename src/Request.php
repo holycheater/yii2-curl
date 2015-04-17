@@ -46,16 +46,31 @@ class Request {
 	 */
 	public $options = [ ];
 
+	private $_attempts = 1;
+
 	public function __construct($url = null) {
 		$this->url = $url;
 	}
 
+	public function exec() {
+		for ($i = 1; $i <= $this->_attempts; $i++) {
+			try {
+				return $this->execInternal();
+			} catch (CurlException $e) {
+				if ($i == $this->_attempts)
+					throw $e;
+				echo "Attempting to query : " . ($i + 1) . ")\n";
+				continue;
+			}
+		}
+	}
+
 	/**
-	 * exec curl request
+	 * execInternal curl request
 	 * @return CurlResponse response
 	 * @throws CurlException on tranfser error or http code >= 400
 	 */
-	public function exec($repeat = 0) {
+	public function execInternal() {
 		$this->ch = curl_init();
 		curl_setopt_array($this->ch, [
 			CURLOPT_URL => $this->url,
@@ -81,11 +96,7 @@ class Request {
 		$httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 
 		if (curl_errno($this->ch) !== CURLE_OK) {
-			if (!empty($repeat)) {
-				$this->exex($repeat - 1);
-			} else {
-				throw new CurlException(curl_error($this->ch), curl_errno($this->ch));
-			}
+			throw new CurlException(curl_error($this->ch), curl_errno($this->ch));
 		}
 
 		$response = new Response($httpCode, $resultData, curl_getinfo($this->ch, CURLINFO_HEADER_SIZE));
@@ -102,10 +113,10 @@ class Request {
 	/**
 	 * send POST query
 	 */
-	public function post($data, $repeat = 0) {
+	public function post($data) {
 		$this->requestType = 'POST';
 		$this->data = $data;
-		return $this->exec($repeat);
+		return $this->exec();
 	}
 
 	/**
@@ -123,4 +134,14 @@ class Request {
 		}
 		return $result;
 	}
+	/**
+	 * Retry query
+	 * @param $tryCount - количество попыток
+	 * @return $qthis;
+	 */
+	public function retry($tryCount) {
+		$this->_attempts = $tryCount;
+		return $this;
+	}
+
 }
