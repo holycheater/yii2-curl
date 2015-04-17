@@ -46,16 +46,31 @@ class Request {
 	 */
 	public $options = [ ];
 
+	private $_attempts = 1;
+
 	public function __construct($url = null) {
 		$this->url = $url;
 	}
 
+	public function exec() {
+		for ($i = 1; $i <= $this->_attempts; $i++) {
+			try {
+				return $this->execInternal();
+			} catch (CurlException $e) {
+				if ($i == $this->_attempts)
+					throw $e;
+				echo "Attempting to query : " . ($i + 1) . ")\n";
+				continue;
+			}
+		}
+	}
+
 	/**
-	 * exec curl request
+	 * execInternal curl request
 	 * @return CurlResponse response
 	 * @throws CurlException on tranfser error or http code >= 400
 	 */
-	public function exec() {
+	public function execInternal() {
 		$this->ch = curl_init();
 		curl_setopt_array($this->ch, [
 			CURLOPT_URL => $this->url,
@@ -119,4 +134,14 @@ class Request {
 		}
 		return $result;
 	}
+	/**
+	 * Retry query
+	 * @param $tryCount - количество попыток
+	 * @return $qthis;
+	 */
+	public function retry($tryCount) {
+		$this->_attempts = $tryCount;
+		return $this;
+	}
+
 }
