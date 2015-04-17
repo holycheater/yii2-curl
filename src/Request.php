@@ -55,7 +55,7 @@ class Request {
 	 * @return CurlResponse response
 	 * @throws CurlException on tranfser error or http code >= 400
 	 */
-	public function exec() {
+	public function exec($repeat = 0) {
 		$this->ch = curl_init();
 		curl_setopt_array($this->ch, [
 			CURLOPT_URL => $this->url,
@@ -81,7 +81,11 @@ class Request {
 		$httpCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 
 		if (curl_errno($this->ch) !== CURLE_OK) {
-			throw new CurlException(curl_error($this->ch), curl_errno($this->ch));
+			if (!empty($repeat)) {
+				$this->exex($repeat -1);
+			} else {
+				throw new CurlException(curl_error($this->ch), curl_errno($this->ch));
+			}
 		}
 
 		$response = new Response($httpCode, $resultData, curl_getinfo($this->ch, CURLINFO_HEADER_SIZE));
