@@ -82,7 +82,7 @@ class Request {
 
 		if (curl_errno($this->ch) !== CURLE_OK) {
 			if (!empty($repeat)) {
-				$this->exex($repeat -1);
+				$this->exex($repeat - 1);
 			} else {
 				throw new CurlException(curl_error($this->ch), curl_errno($this->ch));
 			}
